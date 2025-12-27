@@ -1,0 +1,24 @@
+{
+	"name": "ls_local_Oracle_acer_vdi",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "This connection is to local Oracle XE in the XEPDB1 for user DEV with pass dev123",
+		"annotations": [],
+		"type": "Oracle",
+		"version": "2.0",
+		"typeProperties": {
+			"server": "localhost:1521/XEPDB1",
+			"authenticationType": "Basic",
+			"username": "DEV",
+			"encryptionClient": "accepted",
+			"encryptionTypesClient": "(AES128, AES192, AES256, 3DES112, 3DES168)",
+			"cryptoChecksumClient": "accepted",
+			"cryptoChecksumTypesClient": "(SHA1, SHA256, SHA384, SHA512)",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIzMDk2ZWJmMS1lYjVjLTRjOTItODcxZS05ODAxM2Y4NDIxZTAiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SHIR-ACER-VDI",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

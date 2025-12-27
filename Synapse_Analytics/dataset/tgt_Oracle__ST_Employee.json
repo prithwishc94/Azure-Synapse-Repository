@@ -1,0 +1,16 @@
+{
+	"name": "tgt_Oracle__ST_Employee",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_local_Oracle_acer_vdi",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "OracleTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "DEV",
+			"table": "ST_EMPLOYEE"
+		}
+	}
+}

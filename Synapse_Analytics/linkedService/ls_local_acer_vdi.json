@@ -1,0 +1,18 @@
+{
+	"name": "ls_local_acer_vdi",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "Connection to Windows 10 VDI on Acer",
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "E:\\AZURE",
+			"userId": "prithwish_acer_10",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjNTdmZTExNS03MjdhLTQwNTMtYWVjMC0xMjIwNTc1Njg3NzEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SHIR-ACER-VDI",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

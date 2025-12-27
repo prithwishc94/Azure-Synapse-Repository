@@ -1,0 +1,7 @@
+{
+	"name": "SHIR-ACER-VDI",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "Connection to Acer Windows10 VDI"
+	}
+}

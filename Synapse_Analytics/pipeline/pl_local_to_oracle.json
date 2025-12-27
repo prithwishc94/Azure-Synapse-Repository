@@ -1,5 +1,5 @@
 {
-	"name": "Pipeline 1",
+	"name": "pl_local_to_oracle",
 	"properties": {
 		"activities": [
 			{

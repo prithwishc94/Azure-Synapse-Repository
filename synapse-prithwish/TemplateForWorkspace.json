@@ -1,0 +1,188 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "synapse-prithwish"
+		},
+		"ls_local_acer_vdi_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_local_acer_vdi'"
+		},
+		"synapse-prithwish-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'synapse-prithwish-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-prithwish.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"ls_local_Oracle_acer_vdi_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_local_Oracle_acer_vdi'"
+		},
+		"ls_local_acer_vdi_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "E:\\AZURE"
+		},
+		"ls_local_acer_vdi_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "prithwish_acer_10"
+		},
+		"synapse-prithwish-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storageprithwish.dfs.core.windows.net"
+		},
+		"ls_local_Oracle_acer_vdi_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "localhost:1521/XEPDB1"
+		},
+		"ls_local_Oracle_acer_vdi_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "DEV"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_local_acer_vdi')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Connection to Windows 10 VDI on Acer",
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('ls_local_acer_vdi_properties_typeProperties_host')]",
+					"userId": "[parameters('ls_local_acer_vdi_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_local_acer_vdi_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "SHIR-ACER-VDI",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/SHIR-ACER-VDI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapse-prithwish-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('synapse-prithwish-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapse-prithwish-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('synapse-prithwish-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SHIR-ACER-VDI')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "Connection to Acer Windows10 VDI",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_local_Oracle_acer_vdi')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "This connection is to local Oracle XE in the XEPDB1 for user DEV with pass dev123",
+				"annotations": [],
+				"type": "Oracle",
+				"version": "2.0",
+				"typeProperties": {
+					"server": "[parameters('ls_local_Oracle_acer_vdi_properties_typeProperties_server')]",
+					"authenticationType": "Basic",
+					"username": "[parameters('ls_local_Oracle_acer_vdi_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_local_Oracle_acer_vdi_password')]"
+					},
+					"encryptionClient": "accepted",
+					"encryptionTypesClient": "(AES128, AES192, AES256, 3DES112, 3DES168)",
+					"cryptoChecksumClient": "accepted",
+					"cryptoChecksumTypesClient": "(SHA1, SHA256, SHA384, SHA512)"
+				},
+				"connectVia": {
+					"referenceName": "SHIR-ACER-VDI",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/SHIR-ACER-VDI')]"
+			]
+		}
+	]
+}

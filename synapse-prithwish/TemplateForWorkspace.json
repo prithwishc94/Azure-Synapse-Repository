@@ -7,6 +7,10 @@
 			"metadata": "Workspace name",
 			"defaultValue": "synapse-prithwish"
 		},
+		"ls_local_Oracle_acer_vdi_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_local_Oracle_acer_vdi'"
+		},
 		"ls_local_acer_vdi_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'ls_local_acer_vdi'"
@@ -16,9 +20,13 @@
 			"metadata": "Secure string for 'connectionString' of 'synapse-prithwish-WorkspaceDefaultSqlServer'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-prithwish.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
-		"ls_local_Oracle_acer_vdi_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'ls_local_Oracle_acer_vdi'"
+		"ls_local_Oracle_acer_vdi_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "localhost:1521/XEPDB1"
+		},
+		"ls_local_Oracle_acer_vdi_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "DEV"
 		},
 		"ls_local_acer_vdi_properties_typeProperties_host": {
 			"type": "string",
@@ -31,20 +39,302 @@
 		"synapse-prithwish-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://storageprithwish.dfs.core.windows.net"
-		},
-		"ls_local_Oracle_acer_vdi_properties_typeProperties_server": {
-			"type": "string",
-			"defaultValue": "localhost:1521/XEPDB1"
-		},
-		"ls_local_Oracle_acer_vdi_properties_typeProperties_username": {
-			"type": "string",
-			"defaultValue": "DEV"
 		}
 	},
 	"variables": {
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/pl_local_to_oracle')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "OracleSink",
+								"writeBatchSize": 10000
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "EMP_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMP_ID",
+											"type": "Decimal",
+											"scale": 130,
+											"precision": 256
+										}
+									},
+									{
+										"source": {
+											"name": "FIRST_NAME",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "FIRST_NAME",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "LAST_NAME",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "LAST_NAME",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "GENDER",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "GENDER",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "DOB",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DATE_OF_BIRTH",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "PHONE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PHONE",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EMAIL",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "EMAIL",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "PRESENT_ADDR",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PRESENT_ADDRESS",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "PER_ADDR",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PERMANENT_ADDRESS",
+											"type": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "src_Empployee",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "tgt_Oracle__ST_Employee",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/src_Empployee')]",
+				"[concat(variables('workspaceId'), '/datasets/tgt_Oracle__ST_Employee')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/src_Empployee')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_local_acer_vdi",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation",
+						"fileName": "Employees.csv",
+						"folderPath": "SOURCES"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EMP_ID",
+						"type": "String"
+					},
+					{
+						"name": "FIRST_NAME",
+						"type": "String"
+					},
+					{
+						"name": "LAST_NAME",
+						"type": "String"
+					},
+					{
+						"name": "GENDER",
+						"type": "String"
+					},
+					{
+						"name": "DOB",
+						"type": "String"
+					},
+					{
+						"name": "PHONE",
+						"type": "String"
+					},
+					{
+						"name": "EMAIL",
+						"type": "String"
+					},
+					{
+						"name": "PRESENT_ADDR",
+						"type": "String"
+					},
+					{
+						"name": "PER_ADDR",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_local_acer_vdi')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/tgt_Oracle__ST_Employee')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_local_Oracle_acer_vdi",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "DEV",
+					"table": "ST_EMPLOYEE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_local_Oracle_acer_vdi')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_local_Oracle_acer_vdi')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "This connection is to local Oracle XE in the XEPDB1 for user DEV with pass dev123",
+				"annotations": [],
+				"type": "Oracle",
+				"version": "2.0",
+				"typeProperties": {
+					"server": "[parameters('ls_local_Oracle_acer_vdi_properties_typeProperties_server')]",
+					"authenticationType": "Basic",
+					"username": "[parameters('ls_local_Oracle_acer_vdi_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_local_Oracle_acer_vdi_password')]"
+					},
+					"encryptionClient": "accepted",
+					"encryptionTypesClient": "(AES128, AES192, AES256, 3DES112, 3DES168)",
+					"cryptoChecksumClient": "accepted",
+					"cryptoChecksumTypesClient": "(SHA1, SHA256, SHA384, SHA512)"
+				},
+				"connectVia": {
+					"referenceName": "SHIR-ACER-VDI",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/SHIR-ACER-VDI')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/ls_local_acer_vdi')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
@@ -152,37 +442,6 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ls_local_Oracle_acer_vdi')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"description": "This connection is to local Oracle XE in the XEPDB1 for user DEV with pass dev123",
-				"annotations": [],
-				"type": "Oracle",
-				"version": "2.0",
-				"typeProperties": {
-					"server": "[parameters('ls_local_Oracle_acer_vdi_properties_typeProperties_server')]",
-					"authenticationType": "Basic",
-					"username": "[parameters('ls_local_Oracle_acer_vdi_properties_typeProperties_username')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('ls_local_Oracle_acer_vdi_password')]"
-					},
-					"encryptionClient": "accepted",
-					"encryptionTypesClient": "(AES128, AES192, AES256, 3DES112, 3DES168)",
-					"cryptoChecksumClient": "accepted",
-					"cryptoChecksumTypesClient": "(SHA1, SHA256, SHA384, SHA512)"
-				},
-				"connectVia": {
-					"referenceName": "SHIR-ACER-VDI",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/SHIR-ACER-VDI')]"
-			]
 		}
 	]
 }

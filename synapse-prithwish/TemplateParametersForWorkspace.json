@@ -5,14 +5,20 @@
 		"workspaceName": {
 			"value": "synapse-prithwish"
 		},
+		"ls_local_Oracle_acer_vdi_password": {
+			"value": ""
+		},
 		"ls_local_acer_vdi_password": {
 			"value": ""
 		},
 		"synapse-prithwish-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-prithwish.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
-		"ls_local_Oracle_acer_vdi_password": {
-			"value": ""
+		"ls_local_Oracle_acer_vdi_properties_typeProperties_server": {
+			"value": "localhost:1521/XEPDB1"
+		},
+		"ls_local_Oracle_acer_vdi_properties_typeProperties_username": {
+			"value": "DEV"
 		},
 		"ls_local_acer_vdi_properties_typeProperties_host": {
 			"value": "E:\\AZURE"
@@ -22,12 +28,6 @@
 		},
 		"synapse-prithwish-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://storageprithwish.dfs.core.windows.net"
-		},
-		"ls_local_Oracle_acer_vdi_properties_typeProperties_server": {
-			"value": "localhost:1521/XEPDB1"
-		},
-		"ls_local_Oracle_acer_vdi_properties_typeProperties_username": {
-			"value": "DEV"
 		}
 	}
 }

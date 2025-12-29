@@ -1,0 +1,19 @@
+{
+	"name": "pq_ST_Employee",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "source"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

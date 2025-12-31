@@ -1,16 +1,17 @@
 {
-	"name": "EMPLOYEES",
+	"name": "src_employment",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"referenceName": "ls_local_acer_vdi",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileSystem": "source"
+				"type": "FileServerLocation",
+				"fileName": "employment.csv",
+				"folderPath": "SOURCES"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -19,39 +20,31 @@
 		},
 		"schema": [
 			{
+				"name": "Manager_ID",
+				"type": "String"
+			},
+			{
 				"name": "EMP_ID",
 				"type": "String"
 			},
 			{
-				"name": "FIRST_NAME",
+				"name": "JOB_TITLE",
 				"type": "String"
 			},
 			{
-				"name": "LAST_NAME",
+				"name": "DEPT_ID",
 				"type": "String"
 			},
 			{
-				"name": "GENDER",
+				"name": "LOCATION",
 				"type": "String"
 			},
 			{
-				"name": "DATE_OF_BIRTH",
+				"name": "HIRE_DATE",
 				"type": "String"
 			},
 			{
-				"name": "PHONE",
-				"type": "String"
-			},
-			{
-				"name": "EMAIL",
-				"type": "String"
-			},
-			{
-				"name": "PRESENT_ADDRESS",
-				"type": "String"
-			},
-			{
-				"name": "PERMANENT_ADDRESS",
+				"name": "TERMINATION_DATE",
 				"type": "String"
 			}
 		]

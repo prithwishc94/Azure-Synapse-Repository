@@ -1,0 +1,18 @@
+{
+	"name": "s_local_lenvo_vdi",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "This linked service is to my VDI path of Windows 11 VDI on Lenovo",
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "D:\\AZURE",
+			"userId": "local_admin",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4NDM5M2ExNC1mMjljLTQ1ODUtYmNiZi1iYjk0YmViZTBhM2MiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SHIR-LENOVO-VDI",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

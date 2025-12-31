@@ -1,5 +1,5 @@
 {
-	"name": "pl_local_to_oracle",
+	"name": "pl_local_to_oracle_adls",
 	"properties": {
 		"activities": [
 			{

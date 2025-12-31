@@ -42,9 +42,7 @@
 								},
 								"sink": {
 									"name": "EMP_ID",
-									"type": "Decimal",
-									"scale": 130,
-									"precision": 256
+									"type": "String"
 								}
 							},
 							{
@@ -82,13 +80,13 @@
 							},
 							{
 								"source": {
-									"name": "DOB",
+									"name": "DATE_OF_BIRTH",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
 									"name": "DATE_OF_BIRTH",
-									"type": "DateTime"
+									"type": "String"
 								}
 							},
 							{
@@ -115,7 +113,7 @@
 							},
 							{
 								"source": {
-									"name": "PRESENT_ADDR",
+									"name": "PRESENT_ADDRESS",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -126,7 +124,7 @@
 							},
 							{
 								"source": {
-									"name": "PER_ADDR",
+									"name": "PERMANENT_ADDRESS",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -487,6 +485,30 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DEPT_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DEPT_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEPT_NAME",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DEPT_NAME",
+									"type": "String"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -599,6 +621,85 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Manager_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "MAN_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EMP_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "EMP_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "JOB_TITLE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "JOB_TITLE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEPT_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DEPT_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LOCATION",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LOCATION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "HIRE_DATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "HIRE_DATE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TERMINATION_DATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TERMINATION_DATE",
+									"type": "String"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,

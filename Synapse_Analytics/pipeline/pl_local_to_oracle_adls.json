@@ -184,7 +184,7 @@
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "FileServerWriteSettings"
+							"type": "AzureBlobFSWriteSettings"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
@@ -313,7 +313,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "src_Empployee",
+						"referenceName": "EMPLOYEES",
 						"type": "DatasetReference"
 					}
 				]

@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "DEV.ST_EMPLOYEE.txt",
 				"fileSystem": "source"
 			},
 			"columnDelimiter": ",",

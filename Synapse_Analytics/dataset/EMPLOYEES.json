@@ -1,0 +1,60 @@
+{
+	"name": "EMPLOYEES",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "DEV.ST_EMPLOYEE.txt",
+				"fileSystem": "source"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "EMP_ID",
+				"type": "String"
+			},
+			{
+				"name": "FIRST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "LAST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "GENDER",
+				"type": "String"
+			},
+			{
+				"name": "DATE_OF_BIRTH",
+				"type": "String"
+			},
+			{
+				"name": "PHONE",
+				"type": "String"
+			},
+			{
+				"name": "EMAIL",
+				"type": "String"
+			},
+			{
+				"name": "PRESENT_ADDRESS",
+				"type": "String"
+			},
+			{
+				"name": "PERMANENT_ADDRESS",
+				"type": "String"
+			}
+		]
+	}
+}

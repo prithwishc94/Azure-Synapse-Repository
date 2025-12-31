@@ -1,0 +1,94 @@
+{
+	"name": "df_create_Employee_H_delta_table",
+	"properties": {
+		"description": "This dataflow is to create the delta table for Employee History.\n\nThis needs to be run just 1 time to create the delta table\n",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EMPLOYEES",
+						"type": "DatasetReference"
+					},
+					"name": "Employee"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "deltaemployees"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "Adding the columns required for Type 2 mapping"
+				},
+				{
+					"name": "SELRENAME"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Employee",
+				"Employee derive(Current_indicator = 'Y',",
+				"          effective_date = '00-00-0000',",
+				"          last_date = '00-00-0000',",
+				"          Key_attributes = 'XXXXXXXXX',",
+				"          non_key_attributes = 'XXXXXXXXX') ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DOB = DATE_OF_BIRTH,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADDR = PRESENT_ADDRESS,",
+				"          PER_ADDR = PERMANENT_ADDRESS,",
+				"          cur_ind = Current_indicator,",
+				"          eff_dt = effective_date,",
+				"          lst_dt = last_date,",
+				"          key_attrb = Key_attributes,",
+				"          non_key_attrrb = non_key_attributes",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELRENAME",
+				"SELRENAME sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist',",
+				"     deltaTruncate: true,",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> deltaemployees"
+			]
+		}
+	}
+}

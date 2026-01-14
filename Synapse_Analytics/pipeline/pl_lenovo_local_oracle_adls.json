@@ -30,7 +30,8 @@
 					},
 					"sink": {
 						"type": "OracleSink",
-						"writeBatchSize": 10000
+						"writeBatchSize": 10000,
+						"preCopyScript": "TRUNCATE TABLE EMPLOYEE;"
 					},
 					"enableStaging": false,
 					"translator": {

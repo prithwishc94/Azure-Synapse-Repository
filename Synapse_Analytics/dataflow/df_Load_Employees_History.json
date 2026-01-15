@@ -37,6 +37,13 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "updateDELTA"
+				},
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "insertOLDrecords"
 				}
 			],
 			"transformations": [
@@ -81,6 +88,18 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "insertOLD"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "surrogateKey2"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -189,6 +208,30 @@
 				"     skipDuplicateMapOutputs: true) ~> selDROP",
 				"selDROP alterRow(updateIf(true())) ~> alterRow1",
 				"alterRow1 derive(Current_indicator = 'N') ~> derivedColumn2",
+				"splitInsertUpdate@UPSERT derive(curr_ind = 'Y',",
+				"          eff_dt = currentTimestamp()) ~> insertOLD",
+				"insertOLD select(mapColumn(",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DOB,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADR,",
+				"          PERMANENT_ADR,",
+				"          exp_KEY_ATTRIBUTES,",
+				"          exp_NON_KEY_ATTRIBUTES,",
+				"          Current_indicator,",
+				"          curr_ind,",
+				"          eff_dt",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 keyGenerate(output(row_number as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey2",
+				"surrogateKey2 derive(Max_ID = coalesce(maxIDCache#outputs().EMP_TABLE_ID, 0) + row_number) ~> derivedColumn3",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -226,6 +269,7 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 2,",
 				"     mapColumn(",
+				"          EMP_TABLE_ID = Max_ID,",
 				"          EMP_ID,",
 				"          FIRST_NAME,",
 				"          LAST_NAME,",
@@ -269,7 +313,59 @@
 				"     mapColumn(",
 				"          EMP_ID,",
 				"          Current_indicator",
-				"     )) ~> updateDELTA"
+				"     )) ~> updateDELTA",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EMP_TABLE_ID as integer,",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string,",
+				"          Current_indicator as string,",
+				"          effective_date as string,",
+				"          last_date as string,",
+				"          Key_attributes as string,",
+				"          non_key_attributes as string",
+				"     ),",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EMP_TABLE_ID = Max_ID,",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DATE_OF_BIRTH = DOB,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADDRESS = PRESENT_ADR,",
+				"          PERMANENT_ADDRESS = PERMANENT_ADR,",
+				"          Key_attributes = exp_KEY_ATTRIBUTES,",
+				"          non_key_attributes = exp_NON_KEY_ATTRIBUTES,",
+				"          Current_indicator,",
+				"          Current_indicator = curr_ind,",
+				"          effective_date = eff_dt",
+				"     )) ~> insertOLDrecords"
 			]
 		}
 	}

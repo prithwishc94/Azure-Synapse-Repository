@@ -1,0 +1,18 @@
+{
+	"name": "sql_employees_delta",
+	"properties": {
+		"description": "Query top 20 from Employees Delta table",
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n    TOP 20 *\nFROM\n    OPENROWSET(\n        BULK 'https://storageprithwish.dfs.core.windows.net/delta-tables/Employees_Hist/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

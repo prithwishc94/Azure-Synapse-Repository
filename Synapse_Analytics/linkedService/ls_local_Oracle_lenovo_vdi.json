@@ -1,0 +1,24 @@
+{
+	"name": "ls_local_Oracle_lenovo_vdi",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "This is connection to DEV user pass : dev123 to Oracle_XE",
+		"annotations": [],
+		"type": "Oracle",
+		"version": "2.0",
+		"typeProperties": {
+			"server": "localhost:1521/XEPDB1",
+			"authenticationType": "Basic",
+			"username": "DEV",
+			"encryptionClient": "accepted",
+			"encryptionTypesClient": "(AES128, AES192, AES256, 3DES112, 3DES168)",
+			"cryptoChecksumClient": "accepted",
+			"cryptoChecksumTypesClient": "(SHA1, SHA256, SHA384, SHA512)",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI2YTMyM2E4ZC0xOWFiLTQ4MmEtOTJlNC02YTA4YmJhYzY1NmYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SHIR-LENOVO-VDI",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,344 @@
+{
+	"name": "pl_lenovo_local_oracle_adls",
+	"properties": {
+		"description": "Copy data from first local d drive then to local oracle and finally to adls",
+		"activities": [
+			{
+				"name": "cp_Employee_local_Oracle",
+				"description": "Copy Employee data from local D drive location to Local Oracle",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "FileServerReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "OracleSink",
+						"writeBatchSize": 10000,
+						"preCopyScript": "TRUNCATE TABLE EMPLOYEE;"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "EMP_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "EMP_ID",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "FIRST_NAME",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FIRST_NAME",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_NAME",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LAST_NAME",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "GENDER",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "GENDER",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "DATE_OF_BIRTH",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DOB",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PHONE",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "EMAIL",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "EMAIL",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "PRESENT_ADDRESS",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PRESENT_ADR",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							},
+							{
+								"source": {
+									"name": "PERMANENT_ADDRESS",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PERMANENT_ADR",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "lenovo_local_employee",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "lenovo_oracle_employee",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "cp_Employee_Oracle_adls",
+				"description": "Copy Employee data from local Oracle to ADLS",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "cp_Employee_local_Oracle",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "OracleSource",
+						"partitionOption": "None",
+						"numberPrecision": 38,
+						"numberScale": 18,
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "EMP_ID",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "EMP_ID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FIRST_NAME",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "FIRST_NAME",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LAST_NAME",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "LAST_NAME",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "GENDER",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "GENDER",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DOB",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "DOB",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "PHONE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EMAIL",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "EMAIL",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PRESENT_ADR",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "PRESENT_ADR",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PERMANENT_ADR",
+									"type": "String",
+									"physicalType": "VARCHAR2"
+								},
+								"sink": {
+									"name": "PERMANENT_ADR",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "lenovo_oracle_employee",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "src_lenovo_employee",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

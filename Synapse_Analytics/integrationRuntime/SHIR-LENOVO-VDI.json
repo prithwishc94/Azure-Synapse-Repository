@@ -1,0 +1,7 @@
+{
+	"name": "SHIR-LENOVO-VDI",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "This us the SHIR to Windows 10 VDI in Lenovo"
+	}
+}

@@ -1,17 +1,17 @@
 {
-	"name": "EMPLOYEES",
+	"name": "lenovo_local_employee",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"referenceName": "s_local_lenvo_vdi",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileName": "DEV.EMPLOYEE.txt",
-				"fileSystem": "source"
+				"type": "FileServerLocation",
+				"fileName": "Employees.csv",
+				"folderPath": "SOURCES"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

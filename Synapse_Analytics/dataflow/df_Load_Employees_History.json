@@ -26,10 +26,17 @@
 						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink1"
+					"name": "insertDELTA"
 				},
 				{
 					"name": "maxIDCache"
+				},
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "updateDELTA"
 				}
 			],
 			"transformations": [
@@ -65,6 +72,15 @@
 				{
 					"name": "derivedColumn1",
 					"description": "creating the sequence generator"
+				},
+				{
+					"name": "selDROP"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -113,8 +129,8 @@
 				"     pickup: 'first',",
 				"     asc(EMP_TABLE_ID, true),",
 				"     broadcast: 'auto')~> lookup1",
-				"selDropLookupColumns split(isNull(lkpEmployeesDelta@Key_attributes),",
-				"     !isNull(lkpEmployeesDelta@Key_attributes) && (expKeyNonKey@NON_KEY_ATTRIBUTES!=lkpEmployeesDelta@non_key_attributes),",
+				"selDropLookupColumns split(isNull(lkp_Key_attributes),",
+				"     !isNull(lkp_Key_attributes) && (exp_NON_KEY_ATTRIBUTES!=lkp_non_key_attributes),",
 				"     disjoint: false) ~> splitInsertUpdate@(INSERT, UPSERT, NOACTION)",
 				"splitInsertUpdate@INSERT derive(Curr_ind = 'Y',",
 				"          eff_date = currentTimestamp()) ~> insertnew",
@@ -165,6 +181,14 @@
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
 				"surrogateKey1 derive(Max_ID = coalesce(maxIDCache#outputs().EMP_TABLE_ID, 0) + row_number) ~> derivedColumn1",
+				"splitInsertUpdate@UPSERT select(mapColumn(",
+				"          EMP_ID,",
+				"          Current_indicator",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selDROP",
+				"selDROP alterRow(updateIf(true())) ~> alterRow1",
+				"alterRow1 derive(Current_indicator = 'N') ~> derivedColumn2",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -215,14 +239,37 @@
 				"          effective_date = eff_date,",
 				"          Key_attributes = exp_KEY_ATTRIBUTES,",
 				"          non_key_attributes = exp_NON_KEY_ATTRIBUTES",
-				"     )) ~> sink1",
+				"     )) ~> insertDELTA",
 				"aggMAXID sink(validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     store: 'cache',",
 				"     format: 'inline',",
 				"     output: false,",
-				"     saveOrder: 1) ~> maxIDCache"
+				"     saveOrder: 1) ~> maxIDCache",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     upsertable: false,",
+				"     keys:['EMP_ID'],",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EMP_ID,",
+				"          Current_indicator",
+				"     )) ~> updateDELTA"
 			]
 		}
 	}

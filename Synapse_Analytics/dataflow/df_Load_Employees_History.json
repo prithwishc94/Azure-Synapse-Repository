@@ -27,6 +27,9 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"name": "maxIDCache"
 				}
 			],
 			"transformations": [
@@ -49,6 +52,19 @@
 				{
 					"name": "selDropLookupColumns",
 					"description": "Dropping not required columns from lookup transformation"
+				},
+				{
+					"name": "aggMAXID"
+				},
+				{
+					"name": "selDropExceptEMPTABID"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn1",
+					"description": "creating the sequence generator"
 				}
 			],
 			"scriptLines": [
@@ -139,7 +155,17 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selDropLookupColumns",
-				"select1 sink(allowSchemaDrift: true,",
+				"selDropExceptEMPTABID aggregate(EMP_TABLE_ID = max(EMP_TABLE_ID)) ~> aggMAXID",
+				"lkpEmployeesDelta select(mapColumn(",
+				"          EMP_TABLE_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selDropExceptEMPTABID",
+				"select1 keyGenerate(output(row_number as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(Max_ID = ERROR_FUNCTION('maxIDCache#')) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          EMP_TABLE_ID as integer,",
@@ -188,7 +214,14 @@
 				"          effective_date = eff_date,",
 				"          Key_attributes = exp_KEY_ATTRIBUTES,",
 				"          non_key_attributes = exp_NON_KEY_ATTRIBUTES",
-				"     )) ~> sink1"
+				"     )) ~> sink1",
+				"aggMAXID sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> maxIDCache"
 			]
 		}
 	}

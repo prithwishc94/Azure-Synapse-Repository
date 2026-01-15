@@ -4,11 +4,78 @@
 		"description": "This is a type 2 Mapping for loading Employees History",
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "src_lenovo_employee",
+						"type": "DatasetReference"
+					},
+					"name": "employees"
+				},
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "lkpEmployeesDelta"
+				}
+			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "expKeyNonKey",
+					"description": "create key and non key attributes"
+				},
+				{
+					"name": "lookup1"
+				}
+			],
 			"scriptLines": [
-				""
+				"source(output(",
+				"          EMP_ID as integer,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DOB as date,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADR as string,",
+				"          PERMANENT_ADR as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employees",
+				"source(output(",
+				"          EMP_TABLE_ID as integer,",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string,",
+				"          Current_indicator as string,",
+				"          effective_date as string,",
+				"          last_date as string,",
+				"          Key_attributes as string,",
+				"          non_key_attributes as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist') ~> lkpEmployeesDelta",
+				"employees derive(KEY_ATTRIBUTES = md5(EMP_ID,FIRST_NAME,LAST_NAME,GENDER),",
+				"          NON_KEY_ATTRIBUTES = md5(PHONE,EMAIL,PRESENT_ADR,PERMANENT_ADR)) ~> expKeyNonKey",
+				"expKeyNonKey, lkpEmployeesDelta lookup(expKeyNonKey@KEY_ATTRIBUTES == lkpEmployeesDelta@Key_attributes",
+				"     && 'Y' == Current_indicator,",
+				"     multiple: false,",
+				"     pickup: 'first',",
+				"     asc(EMP_TABLE_ID, true),",
+				"     broadcast: 'auto')~> lookup1"
 			]
 		}
 	}

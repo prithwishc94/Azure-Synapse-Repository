@@ -1,0 +1,33 @@
+{
+	"name": "pf_load_Employees_history",
+	"properties": {
+		"description": "Pipeline to type 2 load Employees history to Employees history delta table",
+		"activities": [
+			{
+				"name": "load_Employees_History_Delta_Table",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_Load_Employees_History",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

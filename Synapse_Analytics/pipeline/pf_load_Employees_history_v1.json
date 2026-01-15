@@ -1,5 +1,5 @@
 {
-	"name": "pf_load_Employees_history",
+	"name": "pf_load_Employees_history_v1",
 	"properties": {
 		"description": "Pipeline to type 2 load Employees history to Employees history delta table",
 		"activities": [

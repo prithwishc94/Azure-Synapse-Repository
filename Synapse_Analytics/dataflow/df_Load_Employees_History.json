@@ -20,7 +20,15 @@
 					"name": "lkpEmployeesDelta"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "expKeyNonKey",
@@ -28,6 +36,19 @@
 				},
 				{
 					"name": "lookup1"
+				},
+				{
+					"name": "splitInsertUpdate"
+				},
+				{
+					"name": "insertnew"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "selDropLookupColumns",
+					"description": "Dropping not required columns from lookup transformation"
 				}
 			],
 			"scriptLines": [
@@ -75,7 +96,99 @@
 				"     multiple: false,",
 				"     pickup: 'first',",
 				"     asc(EMP_TABLE_ID, true),",
-				"     broadcast: 'auto')~> lookup1"
+				"     broadcast: 'auto')~> lookup1",
+				"selDropLookupColumns split(isNull(lkpEmployeesDelta@Key_attributes),",
+				"     !isNull(lkpEmployeesDelta@Key_attributes) && (expKeyNonKey@NON_KEY_ATTRIBUTES!=lkpEmployeesDelta@non_key_attributes),",
+				"     disjoint: false) ~> splitInsertUpdate@(INSERT, UPSERT, NOACTION)",
+				"splitInsertUpdate@INSERT derive(Curr_ind = 'Y',",
+				"          eff_date = currentTimestamp()) ~> insertnew",
+				"insertnew select(mapColumn(",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DOB,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADR,",
+				"          PERMANENT_ADR,",
+				"          exp_KEY_ATTRIBUTES,",
+				"          exp_NON_KEY_ATTRIBUTES,",
+				"          Current_indicator,",
+				"          Curr_ind,",
+				"          eff_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"lookup1 select(mapColumn(",
+				"          EMP_ID = employees@EMP_ID,",
+				"          FIRST_NAME = employees@FIRST_NAME,",
+				"          LAST_NAME = employees@LAST_NAME,",
+				"          GENDER = employees@GENDER,",
+				"          DOB,",
+				"          PHONE = employees@PHONE,",
+				"          EMAIL = employees@EMAIL,",
+				"          PRESENT_ADR,",
+				"          PERMANENT_ADR,",
+				"          exp_KEY_ATTRIBUTES = expKeyNonKey@KEY_ATTRIBUTES,",
+				"          exp_NON_KEY_ATTRIBUTES = expKeyNonKey@NON_KEY_ATTRIBUTES,",
+				"          EMP_TABLE_ID,",
+				"          Current_indicator,",
+				"          lkp_Key_attributes = lkpEmployeesDelta@Key_attributes,",
+				"          lkp_non_key_attributes = lkpEmployeesDelta@non_key_attributes",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selDropLookupColumns",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EMP_TABLE_ID as integer,",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string,",
+				"          Current_indicator as string,",
+				"          effective_date as string,",
+				"          last_date as string,",
+				"          Key_attributes as string,",
+				"          non_key_attributes as string",
+				"     ),",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DATE_OF_BIRTH = DOB,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADDRESS = PRESENT_ADR,",
+				"          PERMANENT_ADDRESS = PERMANENT_ADR,",
+				"          Current_indicator,",
+				"          effective_date = eff_date,",
+				"          Key_attributes = exp_KEY_ATTRIBUTES,",
+				"          non_key_attributes = exp_NON_KEY_ATTRIBUTES",
+				"     )) ~> sink1"
 			]
 		}
 	}

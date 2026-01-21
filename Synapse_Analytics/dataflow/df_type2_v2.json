@@ -34,6 +34,13 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "sink2"
+				},
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink3"
 				}
 			],
 			"transformations": [
@@ -69,6 +76,12 @@
 				},
 				{
 					"name": "alterRow2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "alterRow3"
 				}
 			],
 			"scriptLines": [
@@ -147,6 +160,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
 				"derivedColumn2 alterRow(updateIf(true())) ~> alterRow2",
+				"split1@UPSERT derive(Cur_Ind = 'Y') ~> derivedColumn3",
+				"derivedColumn3 alterRow(insertIf(true())) ~> alterRow3",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -233,7 +248,55 @@
 				"     mapColumn(",
 				"          EMP_ID,",
 				"          Current_indicator = Cur_Ind",
-				"     )) ~> sink2"
+				"     )) ~> sink2",
+				"alterRow3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string,",
+				"          Current_indicator as string,",
+				"          effective_date as string,",
+				"          last_date as string,",
+				"          Key_attributes as string,",
+				"          non_key_attributes as string",
+				"     ),",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DATE_OF_BIRTH,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADDRESS,",
+				"          PERMANENT_ADDRESS,",
+				"          Key_attributes = exp_key_attributes,",
+				"          non_key_attributes = exp_non_key_attributes,",
+				"          Current_indicator = Cur_Ind",
+				"     )) ~> sink3"
 			]
 		}
 	}

@@ -26,21 +26,21 @@
 						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink1"
+					"name": "mewInsert"
 				},
 				{
 					"linkedService": {
 						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink2"
+					"name": "oldInsert"
 				},
 				{
 					"linkedService": {
 						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink3"
+					"name": "update"
 				}
 			],
 			"transformations": [
@@ -209,7 +209,7 @@
 				"          Key_attributes = exp_key_attributes,",
 				"          non_key_attributes = exp_non_key_attributes,",
 				"          Current_indicator = Cur_Ind",
-				"     )) ~> sink1",
+				"     )) ~> mewInsert",
 				"alterRow2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -248,7 +248,7 @@
 				"     mapColumn(",
 				"          EMP_ID,",
 				"          Current_indicator = Cur_Ind",
-				"     )) ~> sink2",
+				"     )) ~> oldInsert",
 				"alterRow3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -296,7 +296,7 @@
 				"          Key_attributes = exp_key_attributes,",
 				"          non_key_attributes = exp_non_key_attributes,",
 				"          Current_indicator = Cur_Ind",
-				"     )) ~> sink3"
+				"     )) ~> update"
 			]
 		}
 	}

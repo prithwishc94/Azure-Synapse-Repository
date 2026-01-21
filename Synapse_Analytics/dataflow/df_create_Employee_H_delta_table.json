@@ -53,7 +53,6 @@
 				"          Key_attributes = 'XXXXXXXXX',",
 				"          non_key_attributes = 'XXXXXXXXX') ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",
-				"          EMP_TABLE_ID,",
 				"          EMP_ID,",
 				"          FIRST_NAME,",
 				"          LAST_NAME,",
@@ -89,7 +88,23 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> deltaemployees"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EMP_ID,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          GENDER,",
+				"          DATE_OF_BIRTH,",
+				"          PHONE,",
+				"          EMAIL,",
+				"          PRESENT_ADDRESS,",
+				"          PERMANENT_ADDRESS,",
+				"          Current_indicator,",
+				"          effective_date,",
+				"          last_date,",
+				"          Key_attributes,",
+				"          non_key_attributes",
+				"     )) ~> deltaemployees"
 			]
 		}
 	}

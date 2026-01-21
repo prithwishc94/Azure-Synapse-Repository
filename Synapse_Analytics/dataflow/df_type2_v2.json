@@ -1,0 +1,118 @@
+{
+	"name": "df_type2_v2",
+	"properties": {
+		"description": "This is without the sequence generatoe part",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EMPLOYEES",
+						"type": "DatasetReference"
+					},
+					"name": "srcEmployee"
+				},
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "tgtEmpHist"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "filActiveRecords"
+				},
+				{
+					"name": "expHash"
+				},
+				{
+					"name": "tgtHash"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcEmployee",
+				"source(output(",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string,",
+				"          Current_indicator as string,",
+				"          effective_date as string,",
+				"          last_date as string,",
+				"          Key_attributes as string,",
+				"          non_key_attributes as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: true,",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'Employees_Hist') ~> tgtEmpHist",
+				"tgtEmpHist filter(equals(Current_indicator, 'Y')) ~> filActiveRecords",
+				"srcEmployee derive(exp_key_attributes = md5(EMP_ID,FIRST_NAME,LAST_NAME,GENDER),",
+				"          exp_non_key_attributes = md5(PHONE,EMAIL,PRESENT_ADDRESS,PERMANENT_ADDRESS)) ~> expHash",
+				"filActiveRecords derive(tgt_key_attributes = md5(EMP_ID,FIRST_NAME,LAST_NAME,GENDER),",
+				"          tgt_non_key_attributes = md5(PHONE,EMAIL,PRESENT_ADDRESS,PERMANENT_ADDRESS)) ~> tgtHash",
+				"expHash, tgtHash lookup(srcEmployee@EMP_ID == tgtEmpHist@EMP_ID,",
+				"     multiple: false,",
+				"     pickup: 'first',",
+				"     asc(ERROR_FUNCTION(''), true),",
+				"     broadcast: 'auto')~> lookup1",
+				"select1 split(isNull(tgt_EMP_ID),",
+				"     !isNull(tgt_EMP_ID)&&(non_key_attributes!=tgt_non_key_attributes),",
+				"     disjoint: false) ~> split1@(INSERT, UPSERT, Unchanged)",
+				"lookup1 select(mapColumn(",
+				"          EMP_ID = srcEmployee@EMP_ID,",
+				"          FIRST_NAME = srcEmployee@FIRST_NAME,",
+				"          LAST_NAME = srcEmployee@LAST_NAME,",
+				"          GENDER = srcEmployee@GENDER,",
+				"          DATE_OF_BIRTH = srcEmployee@DATE_OF_BIRTH,",
+				"          PHONE = srcEmployee@PHONE,",
+				"          EMAIL = srcEmployee@EMAIL,",
+				"          PRESENT_ADDRESS = srcEmployee@PRESENT_ADDRESS,",
+				"          PERMANENT_ADDRESS = srcEmployee@PERMANENT_ADDRESS,",
+				"          exp_key_attributes,",
+				"          exp_non_key_attributes,",
+				"          tgt_EMP_ID = tgtEmpHist@EMP_ID,",
+				"          Current_indicator,",
+				"          Key_attributes,",
+				"          non_key_attributes,",
+				"          tgt_key_attributes,",
+				"          tgt_non_key_attributes",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1"
+			]
+		}
+	}
+}

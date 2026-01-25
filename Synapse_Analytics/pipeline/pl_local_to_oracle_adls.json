@@ -28,7 +28,8 @@
 					},
 					"sink": {
 						"type": "OracleSink",
-						"writeBatchSize": 10000
+						"writeBatchSize": 10000,
+						"preCopyScript": "TRUNCATE TABLE DEV.ST_EMPLOYEE"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -344,7 +345,8 @@
 					},
 					"sink": {
 						"type": "OracleSink",
-						"writeBatchSize": 10000
+						"writeBatchSize": 10000,
+						"preCopyScript": "TRUNCATE TABLE DEV.ST_SALARY"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -480,7 +482,8 @@
 					},
 					"sink": {
 						"type": "OracleSink",
-						"writeBatchSize": 10000
+						"writeBatchSize": 10000,
+						"preCopyScript": "TRUNCATE TABLE DEV.ST_DEPARTMENT"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -592,6 +595,7 @@
 			},
 			{
 				"name": "cp_employment_local_Oracle",
+				"description": "TRUNCATE TABLE DEV.ST_EMPLOYMENT",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {

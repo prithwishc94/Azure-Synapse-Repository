@@ -1,0 +1,37 @@
+{
+	"name": "raw_ftp_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pftpfilename": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().pftpfilename",
+					"type": "Expression"
+				},
+				"folderPath": "ftp",
+				"fileSystem": "daily-feed-load"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "H20260201LIFEPOLICYDAILYLOAD                                                         ",
+				"type": "String"
+			}
+		]
+	}
+}

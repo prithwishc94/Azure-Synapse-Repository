@@ -123,7 +123,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"p_target_filename": {
-														"value": "@item().name",
+														"value": "@concat(\n    substring(item().name,0,\n    lastIndexOf(item().name, '_' )\n    ),\n    '.txt'\n    )",
 														"type": "Expression"
 													}
 												}

@@ -1,0 +1,23 @@
+{
+	"name": "dsFTPrawdata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "ftp",
+				"fileSystem": "daily-feed-load"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

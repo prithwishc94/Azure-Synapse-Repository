@@ -1,5 +1,5 @@
 {
-	"name": "Pipeline_FTP",
+	"name": "pl2_FTP_LANDING",
 	"properties": {
 		"activities": [
 			{
@@ -24,6 +24,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -137,6 +138,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "End_to_End_Data_Flow"
+		},
 		"annotations": []
 	}
 }

@@ -1,0 +1,32 @@
+{
+	"name": "folder_LANDING",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"prm_LANDING_File_List": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().prm_LANDING_File_List",
+					"type": "Expression"
+				},
+				"folderPath": "landing",
+				"fileSystem": "daily-feed-load"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

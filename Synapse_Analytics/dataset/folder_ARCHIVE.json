@@ -1,0 +1,32 @@
+{
+	"name": "folder_ARCHIVE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"prm_ARCHIVE_File_List": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().prm_ARCHIVE_File_List",
+					"type": "Expression"
+				},
+				"folderPath": "archive",
+				"fileSystem": "daily-feed-load"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

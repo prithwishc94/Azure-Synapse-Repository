@@ -1,5 +1,5 @@
 {
-	"name": "src_lenovo_employee",
+	"name": "FOLDER_FTP_LOCATION",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
@@ -10,12 +10,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "DEV.EMPLOYEE.txt",
-				"fileSystem": "source"
+				"folderPath": "ftp",
+				"fileSystem": "daily-feed-load"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
 		"schema": []

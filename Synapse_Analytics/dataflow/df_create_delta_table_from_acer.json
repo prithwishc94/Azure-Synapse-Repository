@@ -1,0 +1,70 @@
+{
+	"name": "df_create_delta_table_from_acer",
+	"properties": {
+		"description": "This is for creating delta table as per the data format in the acer vdi",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EMPLOYEES",
+						"type": "DatasetReference"
+					},
+					"name": "Employees"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EmployeesHist"
+				}
+			],
+			"transformations": [
+				{
+					"name": "addColumns",
+					"description": "adding all the columns to maintain the type 2 flow"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EMP_ID as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          GENDER as string,",
+				"          DATE_OF_BIRTH as string,",
+				"          PHONE as string,",
+				"          EMAIL as string,",
+				"          PRESENT_ADDRESS as string,",
+				"          PERMANENT_ADDRESS as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Employees",
+				"Employees derive(CUR_IND = 'Y',",
+				"          NATURAL_KEY = md5(EMP_ID,FIRST_NAME,LAST_NAME,GENDER),",
+				"          NON_KEY_ATTRIBUTES = md5(PHONE,EMAIL,PRESENT_ADDRESS,PERMANENT_ADDRESS)) ~> addColumns",
+				"addColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'delta-tables',",
+				"     folderPath: 'ACER',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> EmployeesHist"
+			]
+		}
+	}
+}

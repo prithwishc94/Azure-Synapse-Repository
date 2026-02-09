@@ -211,6 +211,44 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "delete data from ftp",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "Copy to Archive",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "folder_FTP",
+									"type": "DatasetReference",
+									"parameters": {
+										"prm_FTP_File_List": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": true,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
 						}
 					]
 				}

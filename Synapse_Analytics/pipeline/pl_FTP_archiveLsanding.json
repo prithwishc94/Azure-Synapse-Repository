@@ -135,7 +135,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"prm_LANDING_File_List": {
-											"value": "@concat(\n    substring(item().name, 0, lastIndexOf(item().name, '_')), \n    '.', \n    last(split(item().name, '.'))\n)",
+											"value": "@concat(\n    substring(item().name, 0, lastIndexOf(item().name, '_')), \n    '.txt'\n)",
 											"type": "Expression"
 										}
 									}
@@ -143,7 +143,7 @@
 							]
 						},
 						{
-							"name": "Copy data1",
+							"name": "Copy to Archive",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -155,8 +155,62 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"enableStaging": false
-							}
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "folder_FTP",
+									"type": "DatasetReference",
+									"parameters": {
+										"prm_FTP_File_List": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "folder_ARCHIVE",
+									"type": "DatasetReference",
+									"parameters": {
+										"prm_ARCHIVE_File_List": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
 						}
 					]
 				}

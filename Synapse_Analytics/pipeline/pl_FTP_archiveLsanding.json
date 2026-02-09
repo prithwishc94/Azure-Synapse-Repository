@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "folder_FTP",
+						"referenceName": "FOLDER_FTP_LOCATION",
 						"type": "DatasetReference"
 					},
 					"fieldList": [
@@ -240,6 +240,12 @@
 											"value": "@item().name",
 											"type": "Expression"
 										}
+									}
+								},
+								"logStorageSettings": {
+									"linkedServiceName": {
+										"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+										"type": "LinkedServiceReference"
 									}
 								},
 								"enableLogging": true,

@@ -1,0 +1,31 @@
+{
+	"name": "pl2_Load_L1_policy",
+	"properties": {
+		"activities": [
+			{
+				"name": "df_Load_Policy_daily",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "END TO END DATA FLOW"
+		},
+		"annotations": []
+	}
+}

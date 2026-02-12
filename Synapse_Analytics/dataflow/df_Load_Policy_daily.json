@@ -1,0 +1,43 @@
+{
+	"name": "df_Load_Policy_daily",
+	"properties": {
+		"folder": {
+			"name": "End to End Data Flow"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_RawFixedWidthFile",
+						"type": "DatasetReference"
+					},
+					"name": "rawPolicy"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_L1File",
+						"type": "DatasetReference"
+					},
+					"name": "L1Policy"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> rawPolicy",
+				"rawPolicy sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> L1Policy"
+			]
+		}
+	}
+}

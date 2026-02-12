@@ -1,0 +1,31 @@
+{
+	"name": "ds_L1File",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-prithwish-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_FileSystem": {
+				"type": "string",
+				"defaultValue": "daily-feed-load"
+			},
+			"p_Directory": {
+				"type": "string",
+				"defaultValue": "L1"
+			},
+			"p_FileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

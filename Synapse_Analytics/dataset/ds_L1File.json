@@ -23,9 +23,18 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "p_FileName",
-				"folderPath": "p_Directory",
-				"fileSystem": "p_FileSystem"
+				"fileName": {
+					"value": "@dataset().p_FileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().p_Directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().p_FileSystem",
+					"type": "Expression"
+				}
 			},
 			"compressionCodec": "snappy"
 		},

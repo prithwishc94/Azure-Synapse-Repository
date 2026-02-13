@@ -22,7 +22,10 @@
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation"
+				"type": "AzureBlobFSLocation",
+				"fileName": "p_FileName",
+				"folderPath": "p_Directory",
+				"fileSystem": "p_FileSystem"
 			},
 			"compressionCodec": "snappy"
 		},

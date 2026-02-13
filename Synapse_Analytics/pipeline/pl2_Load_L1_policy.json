@@ -17,7 +17,19 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "df_Load_Policy_daily",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"rawPolicy": {
+								"p_FileSystem": "daily-feed-load",
+								"p_Directory": "landing",
+								"p_FileName": "LIFE_POLICY_DAILY.txt"
+							},
+							"L1Policy": {
+								"p_FileSystem": "daily-feed-load",
+								"p_Directory": "L1",
+								"p_FileName": "LIFE_POLICY_DAILY.parquet"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,

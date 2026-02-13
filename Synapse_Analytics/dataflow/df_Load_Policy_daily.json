@@ -55,7 +55,8 @@
 				"ParseColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
-				"     umask: 0022,",
+				"     partitionFileNames:[''],",
+				"     umask: 0777,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
@@ -73,7 +74,8 @@
 				"          Agent_Code,",
 				"          Branch_Code,",
 				"          Country_Code",
-				"     )) ~> L1Policy"
+				"     ),",
+				"     partitionBy('hash', 1)) ~> L1Policy"
 			]
 		}
 	}

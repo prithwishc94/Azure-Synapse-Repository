@@ -24,19 +24,56 @@
 					"name": "L1Policy"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "removeHeaderTrailer"
+				},
+				{
+					"name": "ParseColumns"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          RawData as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> rawPolicy",
-				"rawPolicy sink(allowSchemaDrift: true,",
+				"rawPolicy filter(!startsWith(RawData, 'H') && !startsWith(RawData, 'T')) ~> removeHeaderTrailer",
+				"removeHeaderTrailer derive(Record_Type = substring(RawData, 1, 1),",
+				"          Policy_Number = substring(RawData, 2, 15),",
+				"          Customer_ID = substring(RawData, 17, 10),",
+				"          Product_Code = substring(RawData, 27, 5),",
+				"          Policy_Status = substring(RawData, 32, 1),",
+				"          Issue_Date = substring(RawData, 33, 8),",
+				"          Premium_Amount = substring(RawData, 41, 10),",
+				"          Sum_Assured = substring(RawData, 51, 12),",
+				"          Payment_Mode = substring(RawData, 63, 1),",
+				"          Agent_Code = substring(RawData, 64, 8),",
+				"          Branch_Code = substring(RawData, 72, 2),",
+				"          Country_Code = substring(RawData, 74, 3)) ~> ParseColumns",
+				"ParseColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> L1Policy"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Record_Type,",
+				"          Policy_Number,",
+				"          Customer_ID,",
+				"          Product_Code,",
+				"          Policy_Status,",
+				"          Issue_Date,",
+				"          Premium_Amount,",
+				"          Sum_Assured,",
+				"          Payment_Mode,",
+				"          Agent_Code,",
+				"          Branch_Code,",
+				"          Country_Code",
+				"     )) ~> L1Policy"
 			]
 		}
 	}

@@ -55,6 +55,8 @@
 				"ParseColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
+				"     partitionFileNames:['LIFE_POLICY_DAILY.parquet'],",
+				"     truncate: true,",
 				"     umask: 0777,",
 				"     preCommands: [],",
 				"     postCommands: [],",
@@ -73,7 +75,8 @@
 				"          Agent_Code,",
 				"          Branch_Code,",
 				"          Country_Code",
-				"     )) ~> L1Policy"
+				"     ),",
+				"     partitionBy('hash', 1)) ~> L1Policy"
 			]
 		}
 	}

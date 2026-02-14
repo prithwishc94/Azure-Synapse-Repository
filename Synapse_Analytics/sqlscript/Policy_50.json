@@ -2,7 +2,7 @@
 	"name": "Policy_50",
 	"properties": {
 		"content": {
-			"query": "-- This is auto-generated code\nSELECT\n    TOP 50 *\nFROM\n    OPENROWSET(\n        BULK 'https://storageprithwish.dfs.core.windows.net/daily-feed-load/L1/part-00000-003912e8-557f-4ba8-b5e8-fe5ba75ab73a-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+			"query": "-- This is auto-generated code\nSELECT\n    TOP 50 *\nFROM\n    OPENROWSET(\n        BULK 'https://storageprithwish.dfs.core.windows.net/daily-feed-load/L1/LIFE_POLICY_DAILY.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
 			"metadata": {
 				"language": "sql"
 			},

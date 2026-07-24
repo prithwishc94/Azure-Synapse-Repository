@@ -1,0 +1,25 @@
+{
+	"name": "LS_LenovoLocal",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "D:\\AZURE",
+			"userId": "prithwish_vdi\\local_admin",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "LocalAdminPassword-LENOVO-VDI-WIN11",
+				"secretVersion": "51dc4b5c224b476eac592cb2e03faa04"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SHIR-LENOVO-WIN11",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"name": "LS_AcerLocal",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "Using the same Key Vault from Lenovo as tthe VDI passwords for both are same : 03326300189",
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "E:\\AZURE",
+			"userId": "desktop-klft3vs\\prithwish_acer_10",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "LocalAdminPassword-LENOVO-VDI-WIN11",
+				"secretVersion": "51dc4b5c224b476eac592cb2e03faa04"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SHIR-ACER-WIN10",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

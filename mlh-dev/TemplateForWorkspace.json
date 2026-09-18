@@ -66,15 +66,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/tempsparkpool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/LS_AcerLocal')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -344,7 +335,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7689ff5e-25be-44c4-bcfc-da79ae2e01b2"
+						"spark.autotune.trackingId": "630873c3-bcaa-4866-9c7d-c786233405e9"
 					}
 				},
 				"metadata": {
@@ -384,7 +375,7 @@
 							"\n",
 							"# 1. Paths\n",
 							"target_path = \"abfss://target@storageadflearntcs.dfs.core.windows.net/deltafiles/customers_delta\"\n",
-							"source_path = \"abfss://target@storageadflearntcs.dfs.core.windows.net/source/customers_scd2_test.csv\" # or incremental path\n",
+							"source_path = \"abfss://source@storageadflearntcs.dfs.core.windows.net/csvfiles/Emp_Source/customers_scd2_test.csv\"  # or incremental path\n",
 							"\n",
 							"# 2. Read Incremental Source & Compute Hash for Change Detection\n",
 							"df_source = spark.read.option(\"header\", \"true\").csv(source_path) \\\n",

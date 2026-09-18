@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d60e1b7f-6e8e-4b01-b777-5026fc501563"
+				"spark.autotune.trackingId": "1e164ab2-2d1b-4a39-a752-e52ff967308d"
 			}
 		},
 		"metadata": {
@@ -56,7 +56,7 @@
 					"\n",
 					"# 1. Paths\n",
 					"target_path = \"abfss://target@storageadflearntcs.dfs.core.windows.net/deltafiles/customers_delta\"\n",
-					"source_path = \"abfss://target@storageadflearntcs.dfs.core.windows.net/source/customers_scd2_test.csv\" # or incremental path\n",
+					"source_path = \"abfss://source@storageadflearntcs.dfs.core.windows.net/csvfiles/Emp_Source/customers_scd2_test.csv\"  # or incremental path\n",
 					"\n",
 					"# 2. Read Incremental Source & Compute Hash for Change Detection\n",
 					"df_source = spark.read.option(\"header\", \"true\").csv(source_path) \\\n",

@@ -1,0 +1,143 @@
+{
+	"name": "sp_scd2_prod",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "tempsparkpool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "d60e1b7f-6e8e-4b01-b777-5026fc501563"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/6be28b09-038a-4a58-8601-3d76a888b981/resourceGroups/INSURANCE_DEV/providers/Microsoft.Synapse/workspaces/mlh-dev/bigDataPools/tempsparkpool",
+				"name": "tempsparkpool",
+				"type": "Spark",
+				"endpoint": "https://mlh-dev.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/tempsparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.5",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from delta.tables import DeltaTable\n",
+					"from pyspark.sql.functions import col, lit, current_date, md5, concat_ws, coalesce, crc32, current_timestamp, expr\n",
+					"\n",
+					"# 1. Paths\n",
+					"target_path = \"abfss://target@storageadflearntcs.dfs.core.windows.net/deltafiles/customers_delta\"\n",
+					"source_path = \"abfss://target@storageadflearntcs.dfs.core.windows.net/source/customers_scd2_test.csv\" # or incremental path\n",
+					"\n",
+					"# 2. Read Incremental Source & Compute Hash for Change Detection\n",
+					"df_source = spark.read.option(\"header\", \"true\").csv(source_path) \\\n",
+					"    .withColumn(\"MD5_CHECKSUM\", md5(concat_ws(\"~#~\", \n",
+					"        coalesce(col(\"FirstName\"), lit(\"\")), \n",
+					"        coalesce(col(\"LastName\"), lit(\"\")), \n",
+					"        coalesce(col(\"City\"), lit(\"\")), \n",
+					"        coalesce(col(\"State\"), lit(\"\")), \n",
+					"        coalesce(col(\"Email\"), lit(\"\")), \n",
+					"        coalesce(col(\"PhoneNumber\").cast(\"string\"), lit(\"\"))\n",
+					"    )))\n",
+					"\n",
+					"# Register source as temp view\n",
+					"df_source.createOrReplaceTempView(\"stg_incoming\")\n",
+					"\n",
+					"# 3. Read Active Target Records\n",
+					"deltaTable = DeltaTable.forPath(spark, target_path)\n",
+					"df_target = deltaTable.toDF().filter(col(\"IsCurrent\") == 1)\n",
+					"df_target.createOrReplaceTempView(\"dim_active\")\n",
+					"\n",
+					"# 4. Execute Atomic SCD Type 2 Merge via Spark SQL\n",
+					"spark.sql(\"\"\"\n",
+					"MERGE INTO delta.`` AS target\n",
+					"USING (\n",
+					"    -- Scenario A: Changed Records that need to be EXPIRED (Matched records)\n",
+					"    SELECT \n",
+					"        target.CustomerSK AS merge_key,\n",
+					"        stg.CustomerID, stg.FirstName, stg.LastName, stg.Email, stg.City, stg.State, stg.PhoneNumber,\n",
+					"        stg.MD5_CHECKSUM,\n",
+					"        'UPDATE' AS action_type\n",
+					"    FROM stg_incoming stg\n",
+					"    JOIN dim_active target ON stg.CustomerID = target.CustomerID\n",
+					"    WHERE stg.MD5_CHECKSUM != target.MD5_CHECKSUM\n",
+					"\n",
+					"    UNION ALL\n",
+					"\n",
+					"    -- Scenario B: Brand New Customers (Unmatched records -> Insert)\n",
+					"    SELECT \n",
+					"        NULL AS merge_key,\n",
+					"        stg.CustomerID, stg.FirstName, stg.LastName, stg.Email, stg.City, stg.State, stg.PhoneNumber,\n",
+					"        stg.MD5_CHECKSUM,\n",
+					"        'INSERT_NEW' AS action_type\n",
+					"    FROM stg_incoming stg\n",
+					"    LEFT ANTI JOIN dim_active target ON stg.CustomerID = target.CustomerID\n",
+					"\n",
+					"    UNION ALL\n",
+					"\n",
+					"    -- Scenario C: New Active Versions for Changed Records (Unmatched due to NULL merge_key -> Insert)\n",
+					"    SELECT \n",
+					"        NULL AS merge_key,\n",
+					"        stg.CustomerID, stg.FirstName, stg.LastName, stg.Email, stg.City, stg.State, stg.PhoneNumber,\n",
+					"        stg.MD5_CHECKSUM,\n",
+					"        'INSERT_VERSION' AS action_type\n",
+					"    FROM stg_incoming stg\n",
+					"    JOIN dim_active target ON stg.CustomerID = target.CustomerID\n",
+					"    WHERE stg.MD5_CHECKSUM != target.MD5_CHECKSUM\n",
+					") source\n",
+					"ON target.CustomerSK = source.merge_key AND target.IsCurrent = 1\n",
+					"\n",
+					"-- 1. Expire existing active row\n",
+					"WHEN MATCHED AND source.action_type = 'UPDATE' THEN\n",
+					"    UPDATE SET \n",
+					"        target.EndDate = current_date(),\n",
+					"        target.IsCurrent = 0\n",
+					"\n",
+					"-- 2. Insert new records (Brand new + New versions)\n",
+					"WHEN NOT MATCHED THEN\n",
+					"    INSERT (CustomerSK, CustomerID, FirstName, LastName, Email, City, State, PhoneNumber, StartDate, EndDate, IsCurrent)\n",
+					"    VALUES (\n",
+					"        abs(crc32(concat(source.CustomerID, current_timestamp()))), \n",
+					"        source.CustomerID, source.FirstName, source.LastName, source.Email, source.City, source.State, source.PhoneNumber,\n",
+					"        current_date(), \n",
+					"        CAST('9999-12-31' AS DATE), \n",
+					"        1\n",
+					"    )\n",
+					"\"\"\".format(target_path))\n",
+					"\n",
+					"print(\"SCD Type 2 Merge completed successfully.\")"
+				],
+				"execution_count": 1
+			}
+		]
+	}
+}

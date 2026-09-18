@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "mlh-dev"
+		},
+		"LS_external_storage_DEV_accountKey": {
+			"value": ""
+		},
+		"external_storage_DEV_accountKey": {
+			"value": ""
+		},
+		"external_storageadflearntcs_accountKey": {
+			"value": ""
+		},
+		"mlh-dev-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:mlh-dev.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"LS_AcerLocal_properties_typeProperties_host": {
+			"value": "E:\\AZURE"
+		},
+		"LS_AcerLocal_properties_typeProperties_userId": {
+			"value": "desktop-klft3vs\\prithwish_acer_10"
+		},
+		"LS_AzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://kv-synapse-local-dev.vault.azure.net/"
+		},
+		"LS_LenovoLocal_properties_typeProperties_host": {
+			"value": "D:\\AZURE"
+		},
+		"LS_LenovoLocal_properties_typeProperties_userId": {
+			"value": "prithwish_vdi\\local_admin"
+		},
+		"LS_external_storage_DEV_properties_typeProperties_url": {
+			"value": "https://externalstoragedev01.dfs.core.windows.net/"
+		},
+		"external_storage_DEV_properties_typeProperties_url": {
+			"value": "https://externalstoragedev01.dfs.core.windows.net/"
+		},
+		"external_storageadflearntcs_properties_typeProperties_url": {
+			"value": "https://storageadflearntcs.dfs.core.windows.net/"
+		},
+		"mlh-dev-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://managedstoragedev01.dfs.core.windows.net"
+		}
+	}
+}
